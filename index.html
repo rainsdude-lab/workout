@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Workout</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f4f7;--sf:#fff;--tx:#14202b;--mu:#5d6b78;--ln:#d9e0e6;--ac:#2f5bff;--ac-t:#fff;--rest:#0f8f78;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171e;--sf:#19232c;--tx:#eef2f5;--mu:#98a6b3;--ln:#2a3640;--ac:#6f8dff;--ac-t:#0b1220;--rest:#2fc3a8}}
+:root[data-theme="dark"]{--bg:#10171e;--sf:#19232c;--tx:#eef2f5;--mu:#98a6b3;--ln:#2a3640;--ac:#6f8dff;--ac-t:#0b1220;--rest:#2fc3a8}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+h1,h2,.num{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;letter-spacing:.01em;margin:0}
+h1{font-size:40px;line-height:1}
+h2{font-size:30px;line-height:1.05}
+p{margin:0}.mu{color:var(--mu)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.card{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:16px;margin-top:12px}
+.card .em{font-size:38px}
+.card b{font-size:18px}
+.btn{display:block;width:100%;background:var(--ac);color:var(--ac-t);font-weight:700;font-size:18px;padding:16px;border-radius:14px;margin-top:18px}
+.ghost{color:var(--ac);font-weight:600;padding:8px 0}
+.row{display:flex;align-items:center;gap:12px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px;margin-top:10px}
+.row .em{font-size:30px;width:40px;text-align:center}
+.row .in{flex:1;min-width:0}.row small{color:var(--mu);display:block;font-size:13px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:36px;height:36px;border-radius:10px;border:1px solid var(--ln);font-size:20px;font-weight:700}
+.step span{min-width:44px;text-align:center;font-weight:700}
+.x{color:var(--mu);font-size:20px;padding:4px 8px}
+.sum{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.lk{display:inline-block;margin-top:4px;font-weight:600;font-size:13px;color:var(--ac)}
+#run .lk{color:#fff;font-size:16px;margin-top:10px;text-decoration:underline}
+#run{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;color:#fff;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px calc(env(safe-area-inset-bottom,0px) + 20px);text-align:center}
+#run.w{background:#2f5bff}#run.r{background:#0f8f78}#run.d{background:#14202b}
+#run .top{display:flex;justify-content:space-between;font-weight:600;opacity:.85}
+#run .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#run .big{font-size:36vw;max-font-size:200px;line-height:.9;font-size:min(36vw,190px)}
+#run .em{font-size:64px}
+#run .nx{opacity:.85;min-height:24px}
+.ctr{display:flex;gap:12px}
+.ctr button{flex:1;background:rgba(255,255,255,.18);border-radius:14px;padding:16px;font-weight:700;font-size:17px;color:#fff}
+.ctr button.main{flex:2;background:#fff;color:#14202b}
+.bar{height:6px;background:rgba(255,255,255,.25);border-radius:3px;margin:10px 0}
+.bar i{display:block;height:100%;background:#fff;border-radius:3px;width:0}
+.add{display:flex;gap:8px;margin-top:14px}
+.add input{flex:1;min-width:0;font:inherit;padding:12px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx)}
+.add button{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:0 16px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="run"></div>
+<script>
+var DEF=[
+{id:"a",name:"Corpo libero 20’",em:"💪",rest:15,ex:[
+{n:"Squat",e:"🦵",d:"Piedi larghi come le spalle, scendi con la schiena dritta.",t:40},
+{n:"Flessioni",e:"🫸",d:"Corpo in linea, gomiti a 45°. Puoi appoggiare le ginocchia.",t:40},
+{n:"Affondi alternati",e:"🚶",d:"Un passo avanti, ginocchio dietro che sfiora il pavimento.",t:40},
+{n:"Plank",e:"🧱",d:"Avambracci a terra, addome e glutei contratti.",t:45},
+{n:"Mountain climber",e:"⛰️",d:"In posizione di plank, porta le ginocchia al petto in alternanza.",t:40},
+{n:"Ponte glutei",e:"🌉",d:"Supino, piedi a terra: solleva il bacino e stringi i glutei.",t:40}]},
+{id:"b",name:"HIIT 12’",em:"🔥",rest:10,ex:[
+{n:"Jumping jack",e:"🤸",d:"Salta aprendo braccia e gambe, ritmo costante.",t:30},
+{n:"Burpee",e:"🏋️",d:"Piegamento, appoggio a terra, salto con le braccia in alto.",t:30},
+{n:"Ginocchia alte",e:"🏃",d:"Corsa sul posto portando le ginocchia all’altezza dei fianchi.",t:30},
+{n:"Squat jump",e:"⬆️",d:"Scendi in squat e salta esplosivo, atterra morbido.",t:30},
+{n:"Pattinatore",e:"⛸️",d:"Salti laterali da un piede all’altro.",t:30},
+{n:"Plank jack",e:"🧱",d:"In plank, apri e chiudi i piedi con un piccolo salto.",t:30}]},
+{id:"c",name:"Stretching 10’",em:"🧘",rest:5,ex:[
+{n:"Collo e spalle",e:"🙆",d:"Inclina la testa di lato, respira lentamente.",t:40},
+{n:"Busto in avanti",e:"🙇",d:"Gambe tese, lascia cadere busto e braccia.",t:50},
+{n:"Quadricipite",e:"🦩",d:"In piedi, tira il tallone verso il gluteo. Cambia gamba a metà.",t:50},
+{n:"Posizione del bambino",e:"🛌",d:"In ginocchio, siediti sui talloni e allunga le braccia avanti.",t:60},
+{n:"Farfalla",e:"🦋",d:"Seduto, pianta dei piedi unite, ginocchia verso il basso.",t:50},
+{n:"Torsione supina",e:"🌀",d:"Da sdraiato, porta un ginocchio di lato. Cambia lato a metà.",t:50}]},
+(function(){var L=[
+["Squat + Pulse","🦵","Scendi in squat e fai piccoli rimbalzi in basso."],
+["Standing Knee + Toe Tap","🕺","In piedi, alterna ginocchio al petto e tocco della punta avanti."],
+["Good Morning + Reverse Lunge","🙇","Piega il busto a schiena dritta, poi passo indietro in affondo."],
+["Front Kicks","🦵","Calci in avanti alternati, controllati e senza scatti."],
+["Dumbbells to Floor Sumo Squats","🏋️","Squat sumo: tocca il pavimento coi manubri e risali."],
+["Sumo Pulses","🦵","Resta in squat sumo e pulsa con piccoli movimenti."],
+["Romanian Deadlift + Row","🏋️","Stacco a gambe quasi tese, poi tira i manubri ai fianchi."],
+["One Arm Thruster – destro","💪","Squat con un manubrio alla spalla, spingi in alto risalendo."],
+["One Arm Thruster – sinistro","💪","Come prima, ora col braccio sinistro."],
+["Romanian Deadlift + Reverse Lunge","🏋️","Stacco, poi risali e fai un passo indietro in affondo."],
+["Dumbbell Overhead Swing","🔔","Porta il manubrio sopra la testa con un’oscillazione, core attivo."],
+["Dumbbell Row + 3 sec hold","🚣","Rematore, tieni 3 secondi con i manubri al petto."],
+["Alternating Shoulder Press","🙌","Spingi un manubrio alla volta sopra la testa."],
+["Gorilla Row","🦍","Busto in avanti, tira un manubrio alla volta verso il fianco."],
+["Overhead Hold March","🚶","Manubri sopra la testa, marcia sul posto."],
+["Dumbbell Swings","🔔","Oscilla il manubrio tra le gambe fino all’altezza del petto."],
+["Tricep Extensions","💪","Manubrio dietro la testa, estendi le braccia in alto."],
+["Reverse Lunge + Curl","🚶","Passo indietro in affondo e curl per i bicipiti."],
+["Curl + Press","💪","Curl e subito dopo spinta sopra la testa."],
+["Squat + 2 x Press","🏋️","Squat, poi due spinte sopra la testa."],
+["Goblet Squat + Pulse","🏆","Squat con il manubrio al petto, poi piccoli rimbalzi."],
+["Goblet Duck Walk","🦆","In squat basso, cammina in avanti con il manubrio al petto."],
+["Reach Up + Down","↕️","Allunga le braccia in alto, poi scendi verso il pavimento."],
+["Goblet Side Squats – destro","↔️","Passo laterale a destra e squat con il manubrio al petto."],
+["Goblet Side Squats – sinistro","↔️","Passo laterale a sinistra e squat con il manubrio al petto."],
+["Split Squats – destro","🦵","Piede destro avanti, scendi e risali restando in posizione."],
+["Split Squats – sinistro","🦵","Piede sinistro avanti, scendi e risali restando in posizione."],
+["Arnold Press","🙌","Parti con i palmi verso di te e ruota mentre spingi in alto."],
+["Shoulder Press Pulses","🙌","Manubri in alto, piccoli impulsi verso l’alto."],
+["Thrusters","🚀","Squat profondo e spinta sopra la testa in un unico movimento."]
+].map(function(a){return{n:a[0],e:a[1],d:a[2],t:50}});
+var C=[["Quad Stretch – destra","🦩","In piedi, tira il tallone destro verso il gluteo."],["Quad Stretch – sinistra","🦩","In piedi, tira il tallone sinistro verso il gluteo."],["Wide Leg Side Swing","🤸","Gambe larghe, oscilla il peso da un lato all’altro."],["Chest Opener + Forward Fold","🙇","Mani dietro la schiena, apri il petto, poi piega il busto in avanti."],["Hamstring Calf Stretch – destra","🧘","Gamba destra tesa avanti, punta verso l’alto, busto in avanti."],["Hamstring Calf Stretch – sinistra","🧘","Gamba sinistra tesa avanti, punta verso l’alto, busto in avanti."]].map(function(a){return{n:a[0],e:a[1],d:a[2],t:30}});
+return{id:"d",name:"Dumbbell HIIT 30’",em:"🏋️",rest:10,ex:L.concat(C)}})(),
+(function(){var c=0;return{id:"e",name:"Pilates Express 24’",em:"🧘",rest:0,ex:[
+["Preparati","🧘","Siediti sui talloni: il video parte da qui.",18],
+["Child’s Pose","🙇","Ginocchia aperte, piedi uniti, braccia distese in avanti.",28],
+["Allungamento laterale – sinistra","↔️","In Child’s Pose, porta le mani verso sinistra.",18],
+["Allungamento laterale – destra","↔️","Porta le mani verso destra.",23],
+["Cat-Cow","🐈","A quattro zampe: inarca la schiena inspirando, arrotondala espirando.",49],
+["Hip Circles – sinistro","🔄","In quadrupedia, cerchi con il ginocchio sinistro piegato, nei due sensi.",42],
+["Kneeling Combo – sinistra","🦵","Sugli avambracci: gamba tesa giù e su, tocco dietro e distensione.",74],
+["Knee-to-Chest – sinistra","🦵","Estendi la gamba indietro e riporta il ginocchio al petto arrotondando la schiena.",63],
+["Glute Pulses – sinistra","🍑","Piccoli slanci verso l’alto con la gamba tesa.",22],
+["Side Kneeling Plank","🧱","Plank laterale in ginocchio, braccio disteso sopra la testa.",42],
+["Clamshell – fianco destro","🐚","Sul fianco, piedi uniti: apri e chiudi le ginocchia come un libro.",40],
+["Clamshell + estensione","🐚","Dopo l’apertura, estendi la gamba superiore.",67],
+["Cerchietti con gamba tesa","⭕","Gamba tesa, cerchietti in senso orario e antiorario.",36],
+["Mermaid Stretch","🧜","Da seduto, allunga lateralmente la colonna.",19],
+["Roll Down","⬇️","Scendi vertebra per vertebra fino alla schiena a terra.",16],
+["Ab Curls","🔼","Mani dietro la nuca, solleva testa e spalle.",51],
+["Oblique Twists","🚴","Torci il busto portando il gomito verso il ginocchio opposto.",44],
+["Ab Pulses","🔼","Piccoli sollevamenti del busto con le mani lungo le cosce.",34],
+["Roll Up","⬆️","Risali a sedere abbracciando le ginocchia.",15],
+["Hip Circles – destro","🔄","In quadrupedia, cerchi con il ginocchio destro piegato, nei due sensi.",39],
+["Kneeling Combo – destra","🦵","Sugli avambracci: gamba destra giù e su, tocco dietro e distensione.",69],
+["Knee-to-Chest – destra","🦵","Estendi la gamba destra indietro e riporta il ginocchio al petto.",55],
+["Glute Pulses – destra","🍑","Piccoli slanci verso l’alto con la gamba destra tesa.",19],
+["Side Kneeling Plank – lato opposto","🧱","Plank laterale in ginocchio sul lato sinistro.",21],
+["Clamshell – fianco sinistro","🐚","Sul fianco sinistro: apri e chiudi le ginocchia.",62],
+["Clamshell + estensione e slancio","🐚","Apri, estendi la gamba e dai uno slancio.",60],
+["Cerchietti con gamba tesa – sinistro","⭕","Gamba tesa, cerchietti nei due sensi.",33],
+["Mermaid Stretch – lato opposto","🧜","Da seduto, allunga lateralmente la colonna dall’altro lato.",12],
+["Tricep Push-ups","💪","Piegamenti stretti, gomiti lungo i fianchi. Puoi stare sulle ginocchia.",99],
+["Shoulder Taps","🤚","In plank (o in ginocchio), tocca alternando le spalle.",36],
+["Plank Hold","🧱","Mantieni il plank per due respiri profondi.",22],
+["Child’s Pose – palmi al cielo","🙇","Palmi rivolti verso l’alto per rilasciare le spalle.",9],
+["Braccia e petto","🙆","Mani intrecciate dietro la schiena, apri il petto.",29],
+["Side Bends","↔️","Seduto sui talloni, inclinati di lato.",27],
+["Torsioni della colonna","🌀","A gambe incrociate, ruota il busto.",21],
+["Forward Fold da seduti","🙇","Piegati in avanti, allunga glutei e schiena.",17],
+["Hip Flexor / Chest Opener","🌉","Solleva i fianchi aprendo il petto verso l’alto.",82],
+["Respiro finale","🌬️","Braccia al cielo, respiro di chiusura.",31]
+].map(function(a){var o={n:a[0],e:a[1],d:a[2],t:a[3],u:"https://www.youtube.com/watch?v=y2RcYo36boM&t="+c};c+=a[3];return o})}})(),
+(function(){return{id:"f",name:"Calisthenics 33’",em:"🤸",rest:10,ex:[
+["Down Dog + Climber","🐕","Da cane a testa in giù, passa al plank e porta le ginocchia al petto.",50],
+["Negative Push Ups","⬇️","Scendi lentamente in flessione, poi risali aiutandoti con le ginocchia.",50],
+["Superwoman Pull Down","🦸","Prono, braccia avanti: tira i gomiti ai fianchi sollevando il petto.",50],
+["Prisoner Squat + Hamstring Stretch","🙇","Squat con le mani dietro la nuca, poi stendi le gambe e allunga i femorali.",50],
+["Prisoner Squat Pulses","🦵","Mani dietro la nuca, piccoli rimbalzi in squat.",50],
+["Wall Sit Hold","🧱","Schiena al muro, cosce parallele al pavimento: resta fermo.",50],
+["Low Squat Walk","🦆","In squat basso, cammina in avanti e indietro.",50],
+["Low Plank to Dolphin","🐬","Da plank sugli avambracci, solleva i fianchi a V e torna giù.",50],
+["Up Down Plank + Shoulder Taps","🧱","Alterna avambracci e mani, poi tocca le spalle in plank.",50],
+["Hollow + Knee Hug","🌙","Supino, schiena schiacciata a terra: abbraccia le ginocchia e tieni 3 secondi.",50],
+["Reverse Crunches","🔼","Supino, solleva il bacino portando le ginocchia verso il petto.",50],
+["Hollow Leg Kicks","🌙","In posizione hollow, calcia alternando le gambe. Tieni 3 secondi.",50],
+["Superwoman Hold","🦸","Prono, solleva braccia, petto e gambe e resta fermo.",50],
+["Frogstand + Squat","🐸","Dallo squat, mani a terra e peso in avanti nella posizione della rana: tieni 5 secondi.",50],
+["Low Plank Hold","🧱","Plank sugli avambracci: mantieni la posizione.",50],
+["Stay Low Squat + Lunge","🦵","Resta basso: alterna squat e affondo senza risalire del tutto.",50],
+["Modified single leg squat – primo lato","🦵","Squat su una gamba, con l’altra appoggiata leggermente per aiutarti.",50],
+["Same Leg Lunge + Squat – primo lato","🦵","Con la stessa gamba, affondo e poi squat.",50],
+["Modified single leg squat – secondo lato","🦵","Cambia gamba: squat su una gamba con l’altra di appoggio.",50],
+["Same Leg Lunge + Squat – secondo lato","🦵","Con la stessa gamba, affondo e poi squat.",50],
+["Reverse Plank Crunches","🔼","In plank inverso, porta un ginocchio al petto.",50],
+["Tricep Dips","💪","Mani dietro di te, piega i gomiti e scendi con il bacino.",50],
+["Sit Up + Bridge","🌉","Alzati a sedere, poi scendi e solleva il bacino in ponte.",50],
+["Tricep Dip Pulses","💪","Piccoli rimbalzi in basso nella posizione di dip.",50],
+["Sumo Squat + Deadlift","🏋️","Squat sumo, poi stendi le gambe e piegati in avanti a schiena dritta.",50],
+["Sumo Squat Pulses","🦵","Resta in squat sumo e pulsa con piccoli movimenti.",50],
+["Side Plank Leg Raises – primo lato","🧱","Plank laterale: solleva la gamba superiore e tieni 3 secondi.",50],
+["Side Plank Leg Raises – secondo lato","🧱","Cambia lato: solleva la gamba superiore e tieni 3 secondi.",50],
+["Toe Squats","🦶","Squat in punta di piedi, con i talloni sollevati.",50],
+["Toe Squat Pulses","🦶","In punta di piedi, piccoli rimbalzi in squat.",50],
+["Back opener","🐱","Apri e allunga la schiena arrotondando la colonna.",30],
+["Calf + Hamstring Stretch – sinistra","🧘","Gamba sinistra tesa avanti: allunga polpaccio e femorale.",30],
+["Calf + Hamstring Stretch – destra","🧘","Gamba destra tesa avanti: allunga polpaccio e femorale.",30],
+["Chest + Shoulder Opener","🙆","Mani intrecciate dietro la schiena, apri petto e spalle.",30]
+].map(function(a){return{n:a[0],e:a[1],d:a[2],t:a[3]}})}})()];
+var W=load().filter(function(w){return"abc".indexOf(w.id)<0});if(!W.some(function(w){return w.id==="d"})){W.push(JSON.parse(JSON.stringify(DEF[3])));save()}if(!W.some(function(w){return w.id==="e"})){W.push(JSON.parse(JSON.stringify(DEF[4])));save()}if(!W.some(function(w){return w.id==="f"})){W.push(JSON.parse(JSON.stringify(DEF[5])));save()}W.forEach(function(w){if(w.id==="e")w.ex.forEach(function(x,i){var y=DEF[4].ex[i];if(!x.u&&y&&y.n===x.n)x.u=y.u})});var cur=null,R=null,wl=null,app=document.getElementById("app"),run=document.getElementById("run");
+function load(){try{var s=localStorage.getItem("wk1");if(s)return JSON.parse(s)}catch(e){}return JSON.parse(JSON.stringify(DEF))}
+function save(){try{localStorage.setItem("wk1",JSON.stringify(W))}catch(e){}}
+function fmt(s){var m=Math.floor(s/60);return m+":"+("0"+(s%60)).slice(-2)}
+function tot(w){return w.ex.reduce(function(a,x){return a+x.t},0)+w.rest*(w.ex.length-1)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function home(){cur=null;
+app.innerHTML='<h1>Allenamenti</h1><p class="mu" style="margin-top:6px">Scegli un workout. La musica continua a suonare mentre ti alleni.</p>'+
+W.map(function(w,i){return '<button class="card" data-o="'+i+'"><span class="em">'+w.em+'</span><span><b>'+esc(w.name)+'</b><br><span class="mu">'+w.ex.length+' esercizi · '+fmt(tot(w))+'</span></span></button>'}).join("")+
+'';
+app.querySelectorAll("[data-o]").forEach(function(b){b.onclick=function(){cur=+b.dataset.o;detail()}});
+}
+function detail(){var w=W[cur];
+app.innerHTML='<button class="ghost" id="bk">‹ Allenamenti</button><h2 style="margin-top:8px">'+esc(w.name)+'</h2>'+
+'<div class="sum"><span class="mu">Durata totale <b class="num" style="font-size:24px;color:var(--tx)">'+fmt(tot(w))+'</b></span>'+
+'<span class="step mu">Recupero <button data-r="-5" aria-label="Meno recupero">−</button><span style="color:var(--tx)">'+w.rest+'s</span><button data-r="5" aria-label="Più recupero">+</button></span></div>'+
+w.ex.map(function(x,i){return '<div class="row"><span class="em">'+x.e+'</span><div class="in"><b>'+esc(x.n)+'</b><small>'+esc(x.d)+'</small>'+(x.u?'<a class="lk" href="'+x.u+'" target="_blank" rel="noopener">Guarda come si fa</a>':'')+'</div><span class="step"><button data-t="'+i+'|-5" aria-label="Meno tempo">−</button><span>'+x.t+'s</span><button data-t="'+i+'|5" aria-label="Più tempo">+</button></span><button class="x" data-x="'+i+'" aria-label="Rimuovi">✕</button></div>'}).join("")+
+'<div class="add"><input id="nn" placeholder="Aggiungi esercizio" maxlength="40"><button id="na">Aggiungi</button></div>'+
+'<button class="btn" id="go"'+(w.ex.length?"":" disabled")+'>Inizia allenamento</button>';
+document.getElementById("bk").onclick=home;
+app.querySelectorAll("[data-r]").forEach(function(b){b.onclick=function(){w.rest=Math.max(0,Math.min(120,w.rest+ +b.dataset.r));save();detail()}});
+app.querySelectorAll("[data-t]").forEach(function(b){b.onclick=function(){var p=b.dataset.t.split("|"),x=w.ex[+p[0]];x.t=Math.max(5,Math.min(600,x.t+ +p[1]));save();detail()}});
+app.querySelectorAll("[data-x]").forEach(function(b){b.onclick=function(){w.ex.splice(+b.dataset.x,1);save();detail()}});
+document.getElementById("na").onclick=function(){var v=document.getElementById("nn").value.trim();if(v){w.ex.push({n:v,e:"⭐",d:"Esercizio personalizzato.",t:30});save();detail()}};
+document.getElementById("go").onclick=start}
+function start(){var w=W[cur];R={i:0,ph:"w",left:w.ex[0].t,dur:w.ex[0].t,paused:false,end:Date.now()+w.ex[0].t*1000};
+try{if(navigator.wakeLock)navigator.wakeLock.request("screen").then(function(l){wl=l}).catch(function(){})}catch(e){}
+run.style.display="flex";draw();R.tm=setInterval(tick,200)}
+function stop(){clearInterval(R&&R.tm);R=null;run.style.display="none";try{if(wl)wl.release()}catch(e){}wl=null;detail()}
+function tick(){if(!R||R.paused||R.ph==="d")return;var l=Math.ceil((R.end-Date.now())/1000);if(l!==R.left){R.left=Math.max(l,0);if(R.left<=0)next();else upd()}}
+function set(ph,i,t){R.ph=ph;R.i=i;R.left=t;R.dur=t;R.end=Date.now()+t*1000;R.paused=false;draw()}
+function next(){var w=W[cur];if(R.ph==="w"){if(R.i>=w.ex.length-1){R.ph="d";draw();return}
+if(w.rest>0)set("r",R.i,w.rest);else set("w",R.i+1,w.ex[R.i+1].t)}else set("w",R.i+1,w.ex[R.i+1].t)}
+function prev(){var w=W[cur];var i=R.ph==="r"?R.i:Math.max(0,R.i-1);set("w",i,w.ex[i].t)}
+function flash(){run.animate([{opacity:.6},{opacity:1}],{duration:350})}
+function pct(){var w=W[cur],d=0,i;for(i=0;i<R.i;i++)d+=w.ex[i].t+w.rest;if(R.ph==="r")d+=w.ex[R.i].t;d+=R.dur-R.left;return Math.max(0,Math.min(100,Math.round(100*d/tot(w))))}
+function upd(){var n=document.getElementById("cd"),b=document.getElementById("pg"),c=document.getElementById("pc"),p=pct();if(n)n.textContent=R.left;if(b)b.style.width=p+"%";if(c)c.textContent=p+"% completato"}
+var FIG=null,af=0,Z=[0,0,0,0,0,0,0],HG=[65,0,0,5,-5,5,-5],RW=[65,-55,5,5,-5,5,-5],OH=[0,175,178,0,0,0,0],RK=[0,15,170,0,0,0,0],SQ=[20,85,85,80,-10,80,-10],SR=[20,15,170,80,-10,80,-10],GS=[20,20,150,85,-10,85,-10],LG=[5,0,0,60,-5,-10,-80],SP=[[0,0,0,35,-5,-15,-50],[5,0,0,75,-5,-20,-85],0];
+var POSE={"Squat":[Z,SQ,0],"Affondi alternati":[Z,[5,0,0,75,-5,-20,-85],0],"Plank":[[64,0,0,-64,-64,-64,-64],[66,0,0,-66,-66,-66,-66],0],
+"Squat + Pulse":[SQ,[20,85,85,60,-8,60,-8],0],"Standing Knee + Toe Tap":[[0,30,30,85,5,0,0],[0,0,0,20,20,0,0],0],
+"Good Morning + Reverse Lunge":[[65,10,160,5,-5,5,-5],[5,10,160,60,-5,-10,-80],1],"Front Kicks":[[0,30,30,0,0,0,0],[-5,-20,20,80,80,0,0],0],
+"Dumbbells to Floor Sumo Squats":[Z,[45,0,0,85,-10,85,-10],1],"Sumo Pulses":[[30,0,0,70,-10,70,-10],[30,0,0,85,-10,85,-10],1],
+"Romanian Deadlift + Row":[HG,RW,1],"One Arm Thruster":[SR,OH,1],"Romanian Deadlift + Reverse Lunge":[HG,LG,1],
+"Dumbbell Overhead Swing":[[60,10,10,10,-10,10,-10],OH,1],"Dumbbell Row + 3 sec hold":[HG,RW,1],"Alternating Shoulder Press":[RK,OH,1],
+"Gorilla Row":[[55,0,0,45,-15,45,-15],[55,-60,5,45,-15,45,-15],1],"Overhead Hold March":[[0,175,178,85,5,0,0],[0,175,178,0,0,85,5],1],
+"Dumbbell Swings":[[60,10,10,10,-10,10,-10],[0,90,90,0,0,0,0],1],"Tricep Extensions":[[0,175,340,0,0,0,0],OH,1],
+"Reverse Lunge + Curl":[LG,[0,0,140,0,0,0,0],1],"Curl + Press":[[0,5,150,0,0,0,0],OH,1],"Squat + 2 x Press":[SR,OH,1],
+"Goblet Squat + Pulse":[GS,[15,20,150,65,-8,65,-8],1],"Goblet Duck Walk":[[20,20,150,80,-10,55,-15],[20,20,150,55,-15,80,-10],1],
+"Reach Up + Down":[OH,[45,5,5,80,-10,80,-10],0],"Goblet Side Squats":[[0,20,150,0,0,0,0],GS,1],"Split Squats":SP,
+"Arnold Press":[[0,70,170,0,0,0,0],OH,1],"Shoulder Press Pulses":[[0,120,178,0,0,0,0],OH,1],"Thrusters":[SR,OH,1],
+"Quad Stretch":[Z,[0,-20,-60,0,0,5,-160],0],"Wide Leg Side Swing":[[10,50,50,0,0,0,0],[-10,-50,-50,0,0,0,0],0],
+"Chest Opener + Forward Fold":[[-8,-50,-50,0,0,0,0],[120,0,0,3,-3,3,-3],0],"Hamstring Calf Stretch":[Z,[40,70,70,40,40,20,-50],0]};
+function render(s){var P=FIG,r=Math.PI/180,t=(performance.now()%2400)/2400,e=.5-.5*Math.cos(2*Math.PI*t),p=P[0].map(function(a,i){return a+(P[1][i]-a)*e}),T=p[0]*r,S=[40*Math.sin(T),40*Math.cos(T)],O=[0,0];
+function L(o,a,l){a*=r;return[o[0]+l*Math.sin(a),o[1]-l*Math.cos(a)]}
+var E=L(S,p[1],22),X=L(E,p[2],20),K=L(O,p[3],28),F=L(K,p[4],28),K2=L(O,p[5],28),F2=L(K2,p[6],28),H=[S[0]+9*Math.sin(T),S[1]+9*Math.cos(T)],g=Math.min(F[1],F2[1],X[1]);
+function q(a){return(80+a[0]).toFixed(1)+","+(142-a[1]+g).toFixed(1)}
+function pl(a,o){return'<polyline'+(o?' opacity=".5"':'')+' points="'+a.map(q).join(" ")+'"/>'}
+var h=q(H).split(","),c=7*Math.cos(p[2]*r),n=7*Math.sin(p[2]*r);
+s.innerHTML='<line x1="10" y1="142" x2="150" y2="142" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+pl([O,K2,F2],1)+pl([O,S])+pl([O,K,F])+pl([S,E,X])+'<circle cx="'+h[0]+'" cy="'+h[1]+'" r="7"/>'+(P[2]?'<polyline stroke-width="8" points="'+q([X[0]-c,X[1]-n])+' '+q([X[0]+c,X[1]+n])+'"/>':'')+'</g>'}
+function loop(){var s=document.getElementById("fg");if(!s||!R||!FIG){af=0;return}if(!R.paused||!s.firstChild)render(s);af=requestAnimationFrame(loop)}
+function draw(){var w=W[cur];flash();
+if(R.ph==="d"){run.className="d";run.innerHTML='<div class="top"><span></span><span></span></div><div class="mid"><div class="em">🎉</div><h1>Fatto!</h1><p>'+esc(w.name)+' completato · '+fmt(tot(w))+'</p></div><div class="ctr"><button class="main" id="bx">Chiudi</button></div>';document.getElementById("bx").onclick=stop;return}
+var x=w.ex[R.i],isW=R.ph==="w",FS=(FIG=isW&&POSE[x.n.replace(/\s–\s(destr|sinistr)[oa]$/,"")]||null),nx=isW?(R.i<w.ex.length-1?"Dopo: "+w.ex[R.i+1].n:"Ultimo esercizio"):"Prossimo: "+w.ex[R.i+1].n;
+run.className=isW?"w":"r";
+run.innerHTML='<div class="top"><span>'+(isW?"Esercizio "+(R.i+1)+" di "+w.ex.length:"Recupero")+' · <b id="pc"></b></span><button id="bx" style="color:#fff;font-weight:600">Esci</button></div>'+
+'<div class="bar"><i id="pg"></i></div><div class="mid">'+(FIG?'<svg id="fg" style="width:128px;height:120px" viewBox="0 0 160 150"></svg>':'')+'<div class="em"'+(FIG?' hidden':'')+'>'+(isW?x.e:"😮‍💨")+'</div><h2 style="font-size:40px">'+(isW?esc(x.n):"Riprendi fiato")+'</h2>'+
+'<div class="num big" id="cd">'+R.left+'</div><p style="max-width:340px;opacity:.9">'+(isW?esc(x.d):"")+'</p>'+(isW&&x.u?'<a class="lk" href="'+x.u+'" target="_blank" rel="noopener">Guarda come si fa</a>':'')+'</div><p class="nx">'+esc(nx)+'</p>'+
+'<div class="ctr"><button id="bp">‹</button><button class="main" id="bm">'+(R.paused?"Riprendi":"Pausa")+'</button><button id="bn">›</button></div>';
+document.getElementById("bx").onclick=function(){var b=this;if(b.dataset.s)stop();else{b.dataset.s=1;b.textContent="Tocca per uscire";setTimeout(function(){if(b.isConnected){b.textContent="Esci";delete b.dataset.s}},3000)}};
+document.getElementById("bp").onclick=prev;document.getElementById("bn").onclick=next;
+document.getElementById("bm").onclick=function(){if(R.paused){R.end=Date.now()+R.left*1000;R.paused=false}else R.paused=true;this.textContent=R.paused?"Riprendi":"Pausa"};upd();if(FIG){render(document.getElementById("fg"));if(!af)af=requestAnimationFrame(loop)}}
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&R&&R.ph!=="d"&&!R.paused&&R.end-Date.now()<=0)tick();if(!document.hidden&&R&&!wl){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(function(l){wl=l}).catch(function(){})}catch(e){}}});
+home();
+</script>
+</body>
+</html>
